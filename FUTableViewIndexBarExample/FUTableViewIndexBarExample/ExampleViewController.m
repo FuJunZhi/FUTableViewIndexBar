@@ -28,13 +28,14 @@
 #import "FUTableViewIndexBar.h"
 #define kScreenWidth  MIN([UIScreen mainScreen].bounds.size.width, \
 [UIScreen mainScreen].bounds.size.height)
+
 @interface ExampleViewController ()<
 UITableViewDataSource,
 UITableViewDelegate,
 FUTableViewIndexBarDelegate>{
      FUTableViewIndexBar          *indexBar;
     __weak IBOutlet UITableView   *plainTableView;
-    
+    //测试数据源
     NSArray *sections;
     NSArray *rows;
 }
@@ -57,12 +58,6 @@ FUTableViewIndexBarDelegate>{
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
-    indexBar = [[FUTableViewIndexBar alloc] initWithFrame:CGRectMake(kScreenWidth - 20, 20, 20, self.view.frame.size.height - 20) borderColor:nil indexTextColor:nil animateColor:nil selectIndexColor:nil];
-    indexBar.defaultIndextList = YES;
-    [self.view addSubview:indexBar];
-    [self.view bringSubviewToFront:indexBar];
-    
-    
     //数据源
     sections = @[@"A", @"D", @"F", @"M", @"N", @"O", @"Z"];
     
@@ -73,6 +68,12 @@ FUTableViewIndexBarDelegate>{
              @[@"Nemesis", @"nemo", @"name"],
              @[@"Obama", @"Oprah", @"Omen", @"OMG OMG OMG", @"O-Zone", @"Ontario"],
              @[@"Zeus", @"Zebra", @"zed"]];
+    
+    //初始化
+    indexBar = [FUTableViewIndexBar fuTableViewIndexBarWithFrame:CGRectMake(kScreenWidth - 20, 20, 20, self.view.frame.size.height - 20) effect:nil];
+    indexBar.defaultIndextList = YES;
+    [self.view addSubview:indexBar];
+    [self.view bringSubviewToFront:indexBar];
     
     indexBar.delegate = self;
 }
@@ -108,14 +109,11 @@ FUTableViewIndexBarDelegate>{
     return cell;
 }
 
-#pragma mark - AIMTableViewIndexBarDelegate
+#pragma mark - FUTableViewIndexBarDelegate
 
-- (void)fu_TableViewIndexBar:(FUTableViewIndexBar *)indexBar didSelectSectionAtIndex:(NSInteger)index{
-    if ([plainTableView numberOfSections] > index && index > -1){   // for safety, should always be YES
-        [plainTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:index]
-                              atScrollPosition:UITableViewScrollPositionTop
-                                      animated:YES];
-    }
+- (void)fu_TableViewIndexBar:(FUTableViewIndexBar *)indexBar sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
+{
+    
 }
 
 

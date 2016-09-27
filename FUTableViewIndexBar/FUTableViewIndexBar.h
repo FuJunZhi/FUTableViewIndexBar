@@ -5,43 +5,60 @@
 //  Copyright (c) 2016 fujunzhi. All rights reserved.
 //  change by fjz  Inspiration from ‘AIMTableViewIndexBar’
 //
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 /**************************************************************
-1.服从代理<FUTableViewIndexBarDelegate>
-2.#import "FUTableViewIndexBar.h"
-3.初始化FUTableViewIndexBar
-4.执行代理方法
- - (void)fu_TableViewIndexBar:(FUTableViewIndexBar *)indexBar didSelectSectionAtIndex:(NSInteger)index{
- if ([plainTableView numberOfSections] > index && index > -1){   // for safety, should always be YES
- [plainTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:index]
- atScrollPosition:UITableViewScrollPositionTop
- animated:YES];
- }
- }
-5.在TableView的numberOfSectionsInTableView代理方法中为索引数组赋值（setIndexes:）
+1.#import "FUTableViewIndexBar.h"
+2.初始化FUTableViewIndexBar
+3.在TableView的numberOfSectionsInTableView代理方法中为索引数组赋值（setIndexes:）
 **************************************************************/
 
 
 #import <UIKit/UIKit.h>
-
 @class FUTableViewIndexBar;
 
-@protocol FUTableViewIndexBarDelegate <NSObject>
+typedef void(^ EffectBlock)(UIColor **borderColor,UIColor **indexTextColor,UIColor **animateColor,UIColor **selectIndexColor);
 
-- (void)fu_TableViewIndexBar:(FUTableViewIndexBar*)indexBar didSelectSectionAtIndex:(NSInteger)index;
+@protocol FUTableViewIndexBarDelegate <NSObject>
+//选中索引
+- (void)fu_TableViewIndexBar:(FUTableViewIndexBar*)indexBar  sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index;
 
 @end
 
 @interface FUTableViewIndexBar : UIView
 
-//索引数组
-@property (nonatomic, strong) NSArray *indexes;
+@property (nonatomic, assign) id <FUTableViewIndexBarDelegate> delegate;
 
-//是否是默认的索引列表(defaule:NO；#、A-Z)
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+/**
+ *  索引数组
+ */
+@property (nonatomic, strong) NSArray *indexes;
+/**
+ *  是否是默认的索引列表(defaule:NO；#、A-Z)
+ */
 @property (assign, nonatomic, getter=isDefaultIndextList) BOOL defaultIndextList;
-//选中字体是否变大（defaule:YES）
+/**
+ *  选中字体是否变大（defaule:YES）
+ */
 @property (assign, nonatomic, getter=isSelectBig) BOOL selectBig;
 
-@property (nonatomic, weak) id <FUTableViewIndexBarDelegate> delegate;
+/*- - - - - - - - - - - - - -方法 - - - - - - - - - - - - - - - */
 
 /**
  *  初始化
@@ -54,12 +71,8 @@
  *
  *  @return FUTableViewIndexBar(颜色为空则为默认颜色)
  */
-- (instancetype)initWithFrame:(CGRect)frame borderColor:(UIColor *)borderColor indexTextColor:(UIColor *)indexTextColor animateColor:(UIColor *)animateColor selectIndexColor:(UIColor *)selectColor;
-
-+ (instancetype)fuTableViewIndexBarWithFrame:(CGRect)frame borderColor:(UIColor *)borderColor indexTextColor:(UIColor *)indexTextColor animateColor:(UIColor *)animateColor selectIndexColor:(UIColor *)selectColor;
-
-
-
++ (instancetype)fuTableViewIndexBarWithFrame:(CGRect)frame;
++ (instancetype)fuTableViewIndexBarWithFrame:(CGRect)frame effect:(EffectBlock)effect;
 @end
 
 

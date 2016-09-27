@@ -4,6 +4,24 @@
 //
 //  Copyright (c) 2016 fujunzhi. All rights reserved.
 //  change by fjz  Inspiration from ‘AIMTableViewIndexBar’
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 
 #import <QuartzCore/QuartzCore.h>
@@ -24,9 +42,21 @@
     CAShapeLayer *shapeLayer;
     CGFloat letterHeight;
 }
+/**
+ *  边框的颜色
+ */
 @property (strong, nonatomic) UIColor *borderColor;
+/**
+ *  索引字体颜色
+ */
 @property (strong, nonatomic) UIColor *indexTextColor;
+/**
+ *  背景动画颜色
+ */
 @property (strong, nonatomic) UIColor *animateColor;
+/**
+ *  选中索引颜色
+ */
 @property (strong, nonatomic) UIColor *selectIndexColor;
 @end
 
@@ -48,19 +78,27 @@
     return self;
 }
 
-
-- (instancetype)initWithFrame:(CGRect)frame borderColor:(UIColor *)borderColor indexTextColor:(UIColor *)indexTextColor animateColor:(UIColor *)animateColor selectIndexColor:(UIColor *)selectColor
++ (instancetype)fuTableViewIndexBarWithFrame:(CGRect)frame
 {
-    self.borderColor = borderColor;
-    self.indexTextColor = indexTextColor;
-    self.animateColor = animateColor;
-    self.selectIndexColor = selectColor;
-    return [self initWithFrame:frame];
+    FUTableViewIndexBar *fuTableViewIndexBar = [[FUTableViewIndexBar alloc] initWithFrame:frame];
+    return fuTableViewIndexBar;
 }
 
-+ (instancetype)fuTableViewIndexBarWithFrame:(CGRect)frame borderColor:(UIColor *)borderColor indexTextColor:(UIColor *)indexTextColor animateColor:(UIColor *)animateColor selectIndexColor:(UIColor *)selectColor
++ (instancetype)fuTableViewIndexBarWithFrame:(CGRect)frame effect:(EffectBlock)effect
 {
-    return [[self alloc] initWithFrame:frame borderColor:borderColor indexTextColor:indexTextColor animateColor:animateColor selectIndexColor:selectColor];
+    FUTableViewIndexBar *fuTableViewIndexBar = [[FUTableViewIndexBar alloc] initWithFrame:frame];
+    UIColor *borderColor;
+    UIColor *indexTextColor;
+    UIColor *animateColor;
+    UIColor *selectIndexColor;
+    if (effect) {
+        effect(&borderColor,&indexTextColor,&animateColor,&selectIndexColor);
+    }
+    fuTableViewIndexBar.borderColor = borderColor;
+    fuTableViewIndexBar.indexTextColor = indexTextColor;
+    fuTableViewIndexBar.animateColor = animateColor;
+    fuTableViewIndexBar.selectIndexColor = selectIndexColor;
+    return fuTableViewIndexBar;
 }
 
 
@@ -89,8 +127,8 @@
 - (void)setIndexes:(NSArray *)idxs {
     indexes = idxs;
     isLayedOut = NO;
-    
-    if (self.isDefaultIndextList)
+    [letters removeAllObjects];
+    if (self.isDefaultIndextList) {
         letters = [@[@"#", @"A", @"B", @"C",
                      @"D", @"E", @"F", @"G",
                      @"H", @"I", @"J", @"K",
@@ -98,12 +136,13 @@
                      @"P", @"Q", @"R", @"S",
                      @"T", @"U", @"V", @"W",
                      @"X", @"Y", @"Z"] mutableCopy];
-    else
+    } else
     {
         letters = [@[@"#"] mutableCopy];
         [letters addObjectsFromArray:indexes];
     }
-    [self layoutSubviews];
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
 }
 
 - (void)layoutSubviews{
@@ -133,8 +172,6 @@
             CATextLayer *ctl = [self textLayerWithSize:fontSize
                                                 string:letter
                                               andFrame:CGRectMake(0,textLayerY, self.frame.size.width, textLayerH)];
-            
-            
             [temp addSublayer:ctl];
             [self.layer addSublayer:temp];
             
@@ -187,15 +224,38 @@
         //        scrollIndex = [indexes indexOfObject:letter];
         //        *stop = scrollIndex != NSNotFound;
         BOOL isExist = [indexes containsObject:letter];
-        if (isExist) {
+        if (isExist)
+        {
             scrollIndex = [indexes indexOfObject:letter];
-            if (self.delegate && [self.delegate respondsToSelector:@selector(fu_TableViewIndexBar:didSelectSectionAtIndex:)])
-                [self.delegate fu_TableViewIndexBar:self didSelectSectionAtIndex:scrollIndex];
+            if (delegate && [delegate respondsToSelector:@selector(fu_TableViewIndexBar:sectionForSectionIndexTitle:atIndex:)])
+            {
+                    [delegate fu_TableViewIndexBar:self sectionForSectionIndexTitle:letter atIndex:scrollIndex];
+            }
+            if ([self currentTableView])
+            {
+                if ([[self currentTableView] numberOfSections] > scrollIndex && scrollIndex > -1){
+                    // for safety, should always be YES
+                    [[self currentTableView] scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:scrollIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+                }
+            }
         }
         *stop = YES;
     }];
     
     //    [delegate tableViewIndexBar:self didSelectSectionAtIndex:scrollIndex];
+}
+
+
+- (UITableView *)currentTableView
+{
+    if ([self.superview isKindOfClass:[UITableView class]])
+        return (UITableView *)self.superview;
+    for (id object in self.superview.subviews)
+    {
+        if ([object isKindOfClass:[UITableView class]])
+            return object;
+    }
+    return nil;
 }
 
 - (void)animateLayerAtIndex:(NSInteger)index{
