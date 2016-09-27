@@ -18,7 +18,7 @@
 2.#import "FUTableViewIndexBar.h"
 3.初始化FUTableViewIndexBar
 4.执行代理方法
-- (void)tableViewIndexBar:(FUTableViewIndexBar *)indexBar didSelectSectionAtIndex:(NSInteger)index{
+- (void)fu_TableViewIndexBar:(FUTableViewIndexBar *)indexBar didSelectSectionAtIndex:(NSInteger)index{
 if ([plainTableView numberOfSections] > index && index > -1){   // for safety, should always be YES
 [plainTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:index]
 atScrollPosition:UITableViewScrollPositionTop
