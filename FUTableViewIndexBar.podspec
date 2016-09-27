@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "FUTableViewIndexBar"
-    s.version      = "1.0.1"
+    s.version      = "2.0.0"
     s.summary      = "custom FUTableViewIndexBar"
     s.homepage     = "https://github.com/FuJunZhi/FUTableViewIndexBar"
     s.license      = "MIT"

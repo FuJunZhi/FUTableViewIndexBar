@@ -4,7 +4,7 @@
 
 ### CocoaPods
 
-  1. Add `pod 'FUTableViewIndexBar', '~> 1.0.1'` to your Podfile.
+  1. Add `pod 'FUTableViewIndexBar', '~> 2.0.0'` to your Podfile.
 
   2. Run `pod install` or `pod update`.
 
