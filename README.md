@@ -28,3 +28,4 @@ animated:YES];
 5.在TableView的numberOfSectionsInTableView代理方法中为索引数组赋值（setIndexes:）
 @end
 ```
+```
