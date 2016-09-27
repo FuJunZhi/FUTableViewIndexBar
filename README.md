@@ -16,7 +16,6 @@
 ```objc
 1.初始化FUTableViewIndexBar
 2.在TableView的numberOfSectionsInTableView代理方法中为索引数组赋值（setIndexes:）
-@end
 ```
 #delegate
 ## <a id="delegate"></a>
@@ -25,7 +24,6 @@
 //选中索引
 - (void)fu_TableViewIndexBar:(FUTableViewIndexBar*)indexBar  sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index;
 
-@end
 @end
 ```
 #setUp
@@ -59,7 +57,6 @@
 */
 + (instancetype)fuTableViewIndexBarWithFrame:(CGRect)frame;
 + (instancetype)fuTableViewIndexBarWithFrame:(CGRect)frame effect:(EffectBlock)effect;
-@end
 ```
 
 
